@@ -74,32 +74,25 @@ mod tests {
     #[test]
     fn test_solve_caesar() {
         let tests = [
-            (
-                "I met a traveller from an antique land",
-                "imetatravellerfromanantiqueland",
-            ),
-            (
-                "Who said, two vast and trunkless legs of stone ",
-                "whosaidtwovastandtrunklesslegsofstone",
-            ),
-            (
-                "Stand in the desert. Near them, on the sand,",
-                "standinthedesertnearthemonthesand",
-            ),
+            "I met a traveller from an antique land",
+            "Who said, two vast and trunkless legs of stone ",
+            "Stand in the desert. Near them, on the sand,",
         ];
-        for (original, expected) in tests {
-            let shifted = Solver::encrypt_caesar(original, 3);
+        for test in tests {
+            let coerced = LowercaseString::coerce(test);
+            let shifted = Solver::encrypt_caesar(test, 3);
             let solved = Solver::solve_caesar(&shifted);
-            assert_eq!(solved.as_ref(), expected);
+            assert_eq!(solved.as_ref(), coerced.as_ref());
         }
     }
 
     #[test]
     fn test_encrypt_decrypt() {
-        let original = "thequickbrownfoxjumpsoverthelazydog";
+        let original = "The quick brown fox jumps over the lazy dog";
+        let coerced = LowercaseString::coerce(original);
         let shift = 7;
         let encrypted = Solver::encrypt_caesar(original, shift);
         let decrypted = Solver::decrypt_caesar(&encrypted, shift);
-        assert_eq!(decrypted, original);
+        assert_eq!(decrypted, coerced.as_ref());
     }
 }
