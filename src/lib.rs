@@ -58,8 +58,6 @@ mod tests {
 
         let english_result = Solver::english_score(&english_text);
         let gibberish_result = Solver::english_score(&gibberish);
-        println!("English result: {}", english_result);
-        println!("Gibberish result: {}", gibberish_result);
         assert!(english_result < gibberish_result);
     }
 
