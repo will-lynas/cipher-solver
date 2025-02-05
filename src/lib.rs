@@ -26,7 +26,7 @@ impl Solver {
         Self::chi_squared(&observed, &ENGLISH_FREQUENCIES)
     }
 
-    pub fn solve(text: &str) -> LowercaseString {
+    pub fn solve_caesar(text: &str) -> LowercaseString {
         let text = LowercaseString::coerce(text);
         (0..26)
             .map(|shift| {
@@ -62,7 +62,7 @@ mod tests {
     }
 
     #[test]
-    fn test_solve() {
+    fn test_solve_caesar() {
         let tests = [
             (
                 "I met a traveller from an antique land",
@@ -79,7 +79,7 @@ mod tests {
         ];
         for (original, expected) in tests {
             let shifted = LowercaseString::coerce(original).caesar_shift(3);
-            let solved = Solver::solve(shifted.as_ref());
+            let solved = Solver::solve_caesar(shifted.as_ref());
             assert_eq!(solved.as_ref(), expected);
         }
     }
