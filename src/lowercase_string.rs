@@ -11,13 +11,17 @@ impl LowercaseString {
         )
     }
 
-    fn indices(&self) -> Vec<u8> {
+    fn to_indices(&self) -> Vec<u8> {
         self.0.chars().map(|c| (c as u8) - b'a').collect()
+    }
+
+    fn from_indices(indices: Vec<u8>) -> Self {
+        Self(indices.into_iter().map(|i| (i + b'a') as char).collect())
     }
 
     fn letter_counts(&self) -> [usize; 26] {
         let mut counts = [0; 26];
-        for idx in self.indices() {
+        for idx in self.to_indices() {
             counts[idx as usize] += 1;
         }
         counts
@@ -33,6 +37,16 @@ impl LowercaseString {
             }
         }
         frequencies
+    }
+
+    pub fn caesar_shift(&self, shift: i32) -> Self {
+        let shift = shift.rem_euclid(26) as u8;
+        Self::from_indices(
+            self.to_indices()
+                .into_iter()
+                .map(|i| (i + shift) % 26)
+                .collect(),
+        )
     }
 }
 
@@ -54,13 +68,23 @@ mod tests {
     }
 
     #[test]
-    fn test_indices() {
-        assert_eq!(LowercaseString::coerce("abc").indices(), vec![0, 1, 2]);
+    fn test_to_indices() {
+        assert_eq!(LowercaseString::coerce("abc").to_indices(), vec![0, 1, 2]);
         assert_eq!(
-            LowercaseString::coerce("hello").indices(),
+            LowercaseString::coerce("hello").to_indices(),
             vec![7, 4, 11, 11, 14]
         );
-        assert_eq!(LowercaseString::coerce("").indices(), Vec::<u8>::new());
+        assert_eq!(LowercaseString::coerce("").to_indices(), Vec::<u8>::new());
+    }
+
+    #[test]
+    fn test_from_indices() {
+        assert_eq!(LowercaseString::from_indices(vec![0, 1, 2]).as_ref(), "abc");
+        assert_eq!(
+            LowercaseString::from_indices(vec![7, 4, 11, 11, 14]).as_ref(),
+            "hello"
+        );
+        assert_eq!(LowercaseString::from_indices(vec![]).as_ref(), "");
     }
 
     #[test]
@@ -85,5 +109,16 @@ mod tests {
         assert!((frequencies[14] - 0.2).abs() < 1e-10); // o: 1/5
 
         assert_eq!(LowercaseString::coerce("").letter_frequencies(), [0.0; 26]);
+    }
+
+    #[test]
+    fn test_caesar_shift() {
+        let text = LowercaseString::coerce("hello");
+        assert_eq!(text.caesar_shift(1).as_ref(), "ifmmp");
+        assert_eq!(text.caesar_shift(2).as_ref(), "jgnnq");
+        assert_eq!(text.caesar_shift(26).as_ref(), "hello");
+        assert_eq!(text.caesar_shift(-1).as_ref(), "gdkkn");
+        assert_eq!(text.caesar_shift(27).as_ref(), "ifmmp");
+        assert_eq!(LowercaseString::coerce("").caesar_shift(1).as_ref(), "");
     }
 }
