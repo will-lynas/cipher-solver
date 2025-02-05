@@ -36,6 +36,7 @@ impl Solver {
     /// let solved = Solver::solve_caesar(&encrypted);
     /// assert_eq!(solved, "thequickbrownfoxjumpsoverthelazydog");
     /// ```
+    #[must_use]
     pub fn solve_caesar(text: &str) -> String {
         let text = LowercaseString::coerce(text);
         (0..26)
@@ -59,6 +60,7 @@ impl Solver {
     /// let encrypted = Solver::encrypt_caesar(text, 3);
     /// assert_eq!(encrypted, "khoorzruog");
     /// ```
+    #[must_use]
     pub fn encrypt_caesar(text: &str, shift: i32) -> String {
         LowercaseString::coerce(text)
             .caesar_shift(shift)
@@ -77,6 +79,7 @@ impl Solver {
     /// let decrypted = Solver::decrypt_caesar(text, 3);
     /// assert_eq!(decrypted, "helloworld");
     /// ```
+    #[must_use]
     pub fn decrypt_caesar(text: &str, shift: i32) -> String {
         Self::encrypt_caesar(text, 26 - shift)
     }

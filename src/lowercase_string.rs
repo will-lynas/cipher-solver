@@ -2,19 +2,22 @@
 pub struct LowercaseString(String);
 
 impl LowercaseString {
+    #[must_use]
     pub fn coerce(s: &str) -> Self {
         Self(
             s.chars()
-                .filter(|c| c.is_ascii_alphabetic())
+                .filter(char::is_ascii_alphabetic)
                 .map(|c| c.to_ascii_lowercase())
                 .collect(),
         )
     }
 
+    #[must_use]
     pub fn to_indices(&self) -> Vec<u8> {
         self.0.chars().map(|c| (c as u8) - b'a').collect()
     }
 
+    #[must_use]
     pub fn from_indices(indices: Vec<u8>) -> Self {
         Self(
             indices
@@ -24,6 +27,7 @@ impl LowercaseString {
         )
     }
 
+    #[must_use]
     pub fn letter_counts(&self) -> [usize; 26] {
         let mut counts = [0; 26];
         for idx in self.to_indices() {
@@ -32,6 +36,8 @@ impl LowercaseString {
         counts
     }
 
+    #[must_use]
+    #[allow(clippy::cast_precision_loss)]
     pub fn letter_frequencies(&self) -> [f64; 26] {
         let counts = self.letter_counts();
         let total = self.0.len() as f64;
@@ -44,7 +50,9 @@ impl LowercaseString {
         frequencies
     }
 
+    #[must_use]
     pub fn caesar_shift(&self, shift: i32) -> Self {
+        #[allow(clippy::cast_possible_truncation)]
         let shift = shift.rem_euclid(26) as u8;
         Self::from_indices(
             self.to_indices()
@@ -113,7 +121,10 @@ mod tests {
         assert!((frequencies[11] - 0.4).abs() < 1e-10); // l: 2/5
         assert!((frequencies[14] - 0.2).abs() < 1e-10); // o: 1/5
 
-        assert_eq!(LowercaseString::coerce("").letter_frequencies(), [0.0; 26]);
+        let empty_freqs = LowercaseString::coerce("").letter_frequencies();
+        for freq in empty_freqs {
+            assert!(freq.abs() < 1e-10);
+        }
     }
 
     #[test]
