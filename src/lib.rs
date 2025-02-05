@@ -7,37 +7,41 @@ const ENGLISH_FREQUENCIES: [f64; 26] = [
     0.02758, 0.00978, 0.02360, 0.00150, 0.01974, 0.00074,
 ];
 
-pub fn chi_squared<const N: usize>(observed: &[f64; N], expected: &[f64; N]) -> f64 {
-    observed
-        .iter()
-        .zip(expected.iter())
-        .map(|(o, e)| {
-            let diff = o - e;
-            diff * diff / e
-        })
-        .sum()
-}
+pub struct Solver;
 
-pub fn english_score(text: &str) -> f64 {
-    let mut counts = [0.0; 26];
-    let mut total = 0;
+impl Solver {
+    fn chi_squared<const N: usize>(observed: &[f64; N], expected: &[f64; N]) -> f64 {
+        observed
+            .iter()
+            .zip(expected.iter())
+            .map(|(o, e)| {
+                let diff = o - e;
+                diff * diff / e
+            })
+            .sum()
+    }
 
-    for c in text.chars() {
-        if let Some(idx) = (c.to_ascii_lowercase() as u8)
-            .checked_sub(b'a')
-            .filter(|&i| i < 26)
-        {
-            counts[idx as usize] += 1.0;
-            total += 1;
+    pub fn english_score(text: &str) -> f64 {
+        let mut counts = [0.0; 26];
+        let mut total = 0;
+
+        for c in text.chars() {
+            if let Some(idx) = (c.to_ascii_lowercase() as u8)
+                .checked_sub(b'a')
+                .filter(|&i| i < 26)
+            {
+                counts[idx as usize] += 1.0;
+                total += 1;
+            }
         }
-    }
 
-    if total == 0 {
-        return f64::INFINITY;
-    }
+        if total == 0 {
+            return f64::INFINITY;
+        }
 
-    let observed: [f64; 26] = counts.map(|c| c / total as f64);
-    chi_squared(&observed, &ENGLISH_FREQUENCIES)
+        let observed: [f64; 26] = counts.map(|c| c / total as f64);
+        Self::chi_squared(&observed, &ENGLISH_FREQUENCIES)
+    }
 }
 
 #[cfg(test)]
@@ -48,7 +52,7 @@ mod tests {
     fn test_chi_squared() {
         let observed = [4.0, 6.0, 8.0];
         let expected = [5.0, 5.0, 8.0];
-        let result = chi_squared(&observed, &expected);
+        let result = Solver::chi_squared(&observed, &expected);
         assert!((result - 0.4).abs() < 1e-10);
     }
 
@@ -57,8 +61,8 @@ mod tests {
         let english_text = "the quick brown fox jumps over the lazy dog";
         let gibberish = "zzzzxxxx";
 
-        let english_result = english_score(english_text);
-        let gibberish_result = english_score(gibberish);
+        let english_result = Solver::english_score(english_text);
+        let gibberish_result = Solver::english_score(gibberish);
         println!("English result: {}", english_result);
         println!("Gibberish result: {}", gibberish_result);
         assert!(english_result < gibberish_result);
@@ -66,7 +70,7 @@ mod tests {
 
     #[test]
     fn test_chi_squared_english_empty() {
-        assert_eq!(english_score(""), f64::INFINITY);
-        assert_eq!(english_score("123 !@#"), f64::INFINITY);
+        assert_eq!(Solver::english_score(""), f64::INFINITY);
+        assert_eq!(Solver::english_score("123 !@#"), f64::INFINITY);
     }
 }
