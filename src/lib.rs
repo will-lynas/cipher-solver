@@ -1,3 +1,6 @@
+pub mod lowercase_string;
+pub use lowercase_string::LowercaseString;
+
 const ENGLISH_FREQUENCIES: [f64; 26] = [
     0.08167, 0.01492, 0.02782, 0.04253, 0.12702, 0.02228, 0.02015, 0.06094, 0.06966, 0.00153,
     0.00772, 0.04025, 0.02406, 0.06749, 0.07507, 0.01929, 0.00095, 0.05987, 0.06327, 0.09056,
@@ -37,26 +40,6 @@ pub fn chi_squared_english(text: &str) -> f64 {
     chi_squared(&observed, &ENGLISH_FREQUENCIES)
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct LowercaseString(String);
-
-impl LowercaseString {
-    pub fn coerce(s: &str) -> Self {
-        Self(
-            s.chars()
-                .filter(|c| c.is_ascii_alphabetic())
-                .map(|c| c.to_ascii_lowercase())
-                .collect(),
-        )
-    }
-}
-
-impl AsRef<str> for LowercaseString {
-    fn as_ref(&self) -> &str {
-        &self.0
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -85,12 +68,5 @@ mod tests {
     fn test_chi_squared_english_empty() {
         assert_eq!(chi_squared_english(""), f64::INFINITY);
         assert_eq!(chi_squared_english("123 !@#"), f64::INFINITY);
-    }
-
-    #[test]
-    fn test_lowercase_string_coerce() {
-        assert_eq!(LowercaseString::coerce("Hello123").as_ref(), "hello");
-        assert_eq!(LowercaseString::coerce("ABC def!").as_ref(), "abcdef");
-        assert_eq!(LowercaseString::coerce("").as_ref(), "");
     }
 }
