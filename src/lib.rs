@@ -37,6 +37,25 @@ pub fn chi_squared_english(text: &str) -> f64 {
     chi_squared(&observed, &ENGLISH_FREQUENCIES)
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct LowercaseString(String);
+
+impl LowercaseString {
+    pub fn new(s: &str) -> Option<Self> {
+        if s.chars().all(|c| c.is_ascii_lowercase()) {
+            Some(Self(s.to_string()))
+        } else {
+            None
+        }
+    }
+}
+
+impl AsRef<str> for LowercaseString {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -65,5 +84,13 @@ mod tests {
     fn test_chi_squared_english_empty() {
         assert_eq!(chi_squared_english(""), f64::INFINITY);
         assert_eq!(chi_squared_english("123 !@#"), f64::INFINITY);
+    }
+
+    #[test]
+    fn test_lowercase_string() {
+        assert!(LowercaseString::new("hello").is_some());
+        assert!(LowercaseString::new("Hello").is_none());
+        assert!(LowercaseString::new("hello123").is_none());
+        assert!(LowercaseString::new("").is_some());
     }
 }
