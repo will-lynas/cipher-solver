@@ -84,19 +84,7 @@ impl Solver {
         Self::encrypt_caesar(text, 26 - shift)
     }
 
-    /// Encrypts a message using a Vigenère cipher with a given keyword.
-    /// Punctuation and whitespace are removed.
-    ///
-    /// # Example
-    /// ```
-    /// use cipher_solver::Solver;
-    ///
-    /// let text = "hello world";
-    /// let encrypted = Solver::encrypt_vigenere(text, "key");
-    /// assert_eq!(encrypted, "rijvsuyvjn");
-    /// ```
-    #[must_use]
-    pub fn encrypt_vigenere(text: &str, keyword: &str) -> String {
+    fn apply_vigenere(text: &str, keyword: &str, decrypt: bool) -> String {
         let text = LowercaseString::coerce(text);
         let keyword = LowercaseString::coerce(keyword);
         let text_indices = text.to_indices();
@@ -111,11 +99,31 @@ impl Solver {
             text_indices
                 .iter()
                 .enumerate()
-                .map(|(i, &c)| (c + key_indices[i % key_len]) % 26)
+                .map(|(i, &c)| {
+                    let k = key_indices[i % key_len];
+                    let shift = if decrypt { 26 - k } else { k };
+                    (c + shift) % 26
+                })
                 .collect(),
         )
         .as_ref()
         .to_string()
+    }
+
+    /// Encrypts a message using a Vigenère cipher with a given keyword.
+    /// Punctuation and whitespace are removed.
+    ///
+    /// # Example
+    /// ```
+    /// use cipher_solver::Solver;
+    ///
+    /// let text = "hello world";
+    /// let encrypted = Solver::encrypt_vigenere(text, "key");
+    /// assert_eq!(encrypted, "rijvsuyvjn");
+    /// ```
+    #[must_use]
+    pub fn encrypt_vigenere(text: &str, keyword: &str) -> String {
+        Self::apply_vigenere(text, keyword, false)
     }
 
     /// Decrypts a message using a Vigenère cipher with a given keyword.
@@ -131,25 +139,7 @@ impl Solver {
     /// ```
     #[must_use]
     pub fn decrypt_vigenere(text: &str, keyword: &str) -> String {
-        let text = LowercaseString::coerce(text);
-        let keyword = LowercaseString::coerce(keyword);
-        let text_indices = text.to_indices();
-        let key_indices = keyword.to_indices();
-        let key_len = key_indices.len();
-
-        if key_len == 0 {
-            return text.as_ref().to_string();
-        }
-
-        LowercaseString::from_indices(
-            text_indices
-                .iter()
-                .enumerate()
-                .map(|(i, &c)| (c + 26 - key_indices[i % key_len]) % 26)
-                .collect(),
-        )
-        .as_ref()
-        .to_string()
+        Self::apply_vigenere(text, keyword, true)
     }
 }
 
