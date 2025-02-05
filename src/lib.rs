@@ -41,12 +41,13 @@ pub fn chi_squared_english(text: &str) -> f64 {
 pub struct LowercaseString(String);
 
 impl LowercaseString {
-    pub fn new(s: &str) -> Option<Self> {
-        if s.chars().all(|c| c.is_ascii_lowercase()) {
-            Some(Self(s.to_string()))
-        } else {
-            None
-        }
+    pub fn coerce(s: &str) -> Self {
+        Self(
+            s.chars()
+                .filter(|c| c.is_ascii_alphabetic())
+                .map(|c| c.to_ascii_lowercase())
+                .collect(),
+        )
     }
 }
 
@@ -87,10 +88,9 @@ mod tests {
     }
 
     #[test]
-    fn test_lowercase_string() {
-        assert!(LowercaseString::new("hello").is_some());
-        assert!(LowercaseString::new("Hello").is_none());
-        assert!(LowercaseString::new("hello123").is_none());
-        assert!(LowercaseString::new("").is_some());
+    fn test_lowercase_string_coerce() {
+        assert_eq!(LowercaseString::coerce("Hello123").as_ref(), "hello");
+        assert_eq!(LowercaseString::coerce("ABC def!").as_ref(), "abcdef");
+        assert_eq!(LowercaseString::coerce("").as_ref(), "");
     }
 }
