@@ -18,7 +18,7 @@ pub fn chi_squared<const N: usize>(observed: &[f64; N], expected: &[f64; N]) -> 
         .sum()
 }
 
-pub fn chi_squared_english(text: &str) -> f64 {
+pub fn english_score(text: &str) -> f64 {
     let mut counts = [0.0; 26];
     let mut total = 0;
 
@@ -57,8 +57,8 @@ mod tests {
         let english_text = "the quick brown fox jumps over the lazy dog";
         let gibberish = "zzzzxxxx";
 
-        let english_result = chi_squared_english(english_text);
-        let gibberish_result = chi_squared_english(gibberish);
+        let english_result = english_score(english_text);
+        let gibberish_result = english_score(gibberish);
         println!("English result: {}", english_result);
         println!("Gibberish result: {}", gibberish_result);
         assert!(english_result < gibberish_result);
@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn test_chi_squared_english_empty() {
-        assert_eq!(chi_squared_english(""), f64::INFINITY);
-        assert_eq!(chi_squared_english("123 !@#"), f64::INFINITY);
+        assert_eq!(english_score(""), f64::INFINITY);
+        assert_eq!(english_score("123 !@#"), f64::INFINITY);
     }
 }
