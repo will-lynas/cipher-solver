@@ -55,6 +55,17 @@ impl Solver {
             .to_string()
     }
 
+    /// Decrypts a message using a Caesar cipher with a given shift.
+    /// Punctuation and whitespace are removed.
+    ///
+    /// # Example
+    /// ```
+    /// use cipher_solver::Solver;
+    ///
+    /// let text = "khoorzruog";
+    /// let decrypted = Solver::decrypt_caesar(text, 3);
+    /// assert_eq!(decrypted, "helloworld");
+    /// ```
     pub fn decrypt_caesar(text: &str, shift: i32) -> String {
         Self::encrypt_caesar(text, 26 - shift)
     }
