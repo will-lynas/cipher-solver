@@ -1,5 +1,5 @@
-pub mod lowercase_string;
-pub use lowercase_string::LowercaseString;
+mod lowercase_string;
+use lowercase_string::LowercaseString;
 
 const ENGLISH_FREQUENCIES: [f64; 26] = [
     0.08167, 0.01492, 0.02782, 0.04253, 0.12702, 0.02228, 0.02015, 0.06094, 0.06966, 0.00153,
@@ -36,6 +36,17 @@ impl Solver {
             .min_by(|(score1, _), (score2, _)| score1.total_cmp(score2))
             .map(|(_, text)| text)
             .unwrap()
+    }
+
+    pub fn encrypt_caesar(text: &str, shift: i32) -> String {
+        LowercaseString::coerce(text)
+            .caesar_shift(shift)
+            .as_ref()
+            .to_string()
+    }
+
+    pub fn decrypt_caesar(text: &str, shift: i32) -> String {
+        Self::encrypt_caesar(text, 26 - shift)
     }
 }
 
@@ -78,8 +89,8 @@ mod tests {
             ),
         ];
         for (original, expected) in tests {
-            let shifted = LowercaseString::coerce(original).caesar_shift(3);
-            let solved = Solver::solve_caesar(shifted.as_ref());
+            let shifted = Solver::encrypt_caesar(original, 3);
+            let solved = Solver::solve_caesar(&shifted);
             assert_eq!(solved.as_ref(), expected);
         }
     }
