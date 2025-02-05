@@ -21,9 +21,21 @@ impl Solver {
             .sum()
     }
 
-    pub fn english_score(text: &LowercaseString) -> f64 {
+    fn english_score(text: &LowercaseString) -> f64 {
         let observed = text.letter_frequencies();
         Self::chi_squared(&observed, &ENGLISH_FREQUENCIES)
+    }
+
+    pub fn solve(text: &str) -> LowercaseString {
+        let text = LowercaseString::coerce(text);
+        (0..26)
+            .map(|shift| {
+                let shifted = text.caesar_shift(shift);
+                (Self::english_score(&shifted), shifted)
+            })
+            .min_by(|(score1, _), (score2, _)| score1.total_cmp(score2))
+            .map(|(_, text)| text)
+            .unwrap()
     }
 }
 
@@ -49,5 +61,28 @@ mod tests {
         println!("English result: {}", english_result);
         println!("Gibberish result: {}", gibberish_result);
         assert!(english_result < gibberish_result);
+    }
+
+    #[test]
+    fn test_solve() {
+        let tests = [
+            (
+                "I met a traveller from an antique land",
+                "imetatravellerfromanantiqueland",
+            ),
+            (
+                "Who said, two vast and trunkless legs of stone ",
+                "whosaidtwovastandtrunklesslegsofstone",
+            ),
+            (
+                "Stand in the desert. Near them, on the sand,",
+                "standinthedesertnearthemonthesand",
+            ),
+        ];
+        for (original, expected) in tests {
+            let shifted = LowercaseString::coerce(original).caesar_shift(3);
+            let solved = Solver::solve(shifted.as_ref());
+            assert_eq!(solved.as_ref(), expected);
+        }
     }
 }
