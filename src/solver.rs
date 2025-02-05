@@ -25,7 +25,18 @@ impl Solver {
         Self::chi_squared(&observed, &ENGLISH_FREQUENCIES)
     }
 
-    pub fn solve_caesar(text: &str) -> LowercaseString {
+    /// Solves a Caesar cipher using statistical analysis.
+    ///
+    /// # Example
+    /// ```
+    /// use cipher_solver::Solver;
+    ///
+    /// let text = "The quick brown fox jumps over the lazy dog";
+    /// let encrypted = Solver::encrypt_caesar(text, 3);
+    /// let solved = Solver::solve_caesar(&encrypted);
+    /// assert_eq!(solved, "thequickbrownfoxjumpsoverthelazydog");
+    /// ```
+    pub fn solve_caesar(text: &str) -> String {
         let text = LowercaseString::coerce(text);
         (0..26)
             .map(|shift| {
@@ -33,7 +44,7 @@ impl Solver {
                 (Self::english_score(&shifted), shifted)
             })
             .min_by(|(score1, _), (score2, _)| score1.total_cmp(score2))
-            .map(|(_, text)| text)
+            .map(|(_, text)| text.as_ref().to_string())
             .unwrap()
     }
 
@@ -104,7 +115,7 @@ mod tests {
             let coerced = LowercaseString::coerce(test);
             let shifted = Solver::encrypt_caesar(test, 3);
             let solved = Solver::solve_caesar(&shifted);
-            assert_eq!(solved.as_ref(), coerced.as_ref());
+            assert_eq!(solved, coerced.as_ref());
         }
     }
 
