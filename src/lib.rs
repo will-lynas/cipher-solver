@@ -94,4 +94,13 @@ mod tests {
             assert_eq!(solved.as_ref(), expected);
         }
     }
+
+    #[test]
+    fn test_encrypt_decrypt() {
+        let original = "thequickbrownfoxjumpsoverthelazydog";
+        let shift = 7;
+        let encrypted = Solver::encrypt_caesar(original, shift);
+        let decrypted = Solver::decrypt_caesar(&encrypted, shift);
+        assert_eq!(decrypted, original);
+    }
 }
