@@ -37,6 +37,17 @@ impl Solver {
             .unwrap()
     }
 
+    /// Encrypts a message using a Caesar cipher with a given shift.
+    /// Punctuation and whitespace are removed.
+    ///
+    /// # Example
+    /// ```
+    /// use cipher_solver::Solver;
+    ///
+    /// let text = "hello world";
+    /// let encrypted = Solver::encrypt_caesar(text, 3);
+    /// assert_eq!(encrypted, "khoorzruog");
+    /// ```
     pub fn encrypt_caesar(text: &str, shift: i32) -> String {
         LowercaseString::coerce(text)
             .caesar_shift(shift)
