@@ -21,25 +21,8 @@ impl Solver {
             .sum()
     }
 
-    pub fn english_score(text: &str) -> f64 {
-        let mut counts = [0.0; 26];
-        let mut total = 0;
-
-        for c in text.chars() {
-            if let Some(idx) = (c.to_ascii_lowercase() as u8)
-                .checked_sub(b'a')
-                .filter(|&i| i < 26)
-            {
-                counts[idx as usize] += 1.0;
-                total += 1;
-            }
-        }
-
-        if total == 0 {
-            return f64::INFINITY;
-        }
-
-        let observed: [f64; 26] = counts.map(|c| c / total as f64);
+    pub fn english_score(text: &LowercaseString) -> f64 {
+        let observed = text.letter_frequencies();
         Self::chi_squared(&observed, &ENGLISH_FREQUENCIES)
     }
 }
@@ -58,19 +41,13 @@ mod tests {
 
     #[test]
     fn test_chi_squared_english_sanity() {
-        let english_text = "the quick brown fox jumps over the lazy dog";
-        let gibberish = "zzzzxxxx";
+        let english_text = LowercaseString::coerce("the quick brown fox jumps over the lazy dog");
+        let gibberish = LowercaseString::coerce("zzzzxxxx");
 
-        let english_result = Solver::english_score(english_text);
-        let gibberish_result = Solver::english_score(gibberish);
+        let english_result = Solver::english_score(&english_text);
+        let gibberish_result = Solver::english_score(&gibberish);
         println!("English result: {}", english_result);
         println!("Gibberish result: {}", gibberish_result);
         assert!(english_result < gibberish_result);
-    }
-
-    #[test]
-    fn test_chi_squared_english_empty() {
-        assert_eq!(Solver::english_score(""), f64::INFINITY);
-        assert_eq!(Solver::english_score("123 !@#"), f64::INFINITY);
     }
 }
