@@ -15,12 +15,24 @@ impl LowercaseString {
         self.0.chars().map(|c| (c as u8) - b'a').collect()
     }
 
-    pub fn letter_counts(&self) -> [usize; 26] {
+    fn letter_counts(&self) -> [usize; 26] {
         let mut counts = [0; 26];
         for idx in self.indices() {
             counts[idx as usize] += 1;
         }
         counts
+    }
+
+    pub fn letter_frequencies(&self) -> [f64; 26] {
+        let counts = self.letter_counts();
+        let total = self.0.len() as f64;
+        let mut frequencies = [0.0; 26];
+        if total > 0.0 {
+            for (i, &count) in counts.iter().enumerate() {
+                frequencies[i] = count as f64 / total;
+            }
+        }
+        frequencies
     }
 }
 
@@ -61,5 +73,17 @@ mod tests {
         assert_eq!(LowercaseString::coerce("hello").letter_counts(), expected);
 
         assert_eq!(LowercaseString::coerce("").letter_counts(), [0; 26]);
+    }
+
+    #[test]
+    fn test_letter_frequencies() {
+        let text = LowercaseString::coerce("hello");
+        let frequencies = text.letter_frequencies();
+        assert!((frequencies[7] - 0.2).abs() < 1e-10); // h: 1/5
+        assert!((frequencies[4] - 0.2).abs() < 1e-10); // e: 1/5
+        assert!((frequencies[11] - 0.4).abs() < 1e-10); // l: 2/5
+        assert!((frequencies[14] - 0.2).abs() < 1e-10); // o: 1/5
+
+        assert_eq!(LowercaseString::coerce("").letter_frequencies(), [0.0; 26]);
     }
 }
