@@ -52,7 +52,7 @@ mod tests {
     }
 
     #[test]
-    fn test_chi_squared_english_sanity() {
+    fn test_english_score_sanity() {
         let english_text = LowercaseString::coerce("the quick brown fox jumps over the lazy dog");
         let gibberish = LowercaseString::coerce("zzzzxxxx");
 
