@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "caesar-cipher-solver"
+name = "cipher-solver"
 version = "0.1.0"
