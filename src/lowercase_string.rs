@@ -11,15 +11,20 @@ impl LowercaseString {
         )
     }
 
-    fn to_indices(&self) -> Vec<u8> {
+    pub fn to_indices(&self) -> Vec<u8> {
         self.0.chars().map(|c| (c as u8) - b'a').collect()
     }
 
-    fn from_indices(indices: Vec<u8>) -> Self {
-        Self(indices.into_iter().map(|i| (i + b'a') as char).collect())
+    pub fn from_indices(indices: Vec<u8>) -> Self {
+        Self(
+            indices
+                .into_iter()
+                .map(|i| (i % 26 + b'a') as char)
+                .collect(),
+        )
     }
 
-    fn letter_counts(&self) -> [usize; 26] {
+    pub fn letter_counts(&self) -> [usize; 26] {
         let mut counts = [0; 26];
         for idx in self.to_indices() {
             counts[idx as usize] += 1;
