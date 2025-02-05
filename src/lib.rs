@@ -4,12 +4,7 @@ const ENGLISH_FREQUENCIES: [f64; 26] = [
     0.02758, 0.00978, 0.02360, 0.00150, 0.01974, 0.00074,
 ];
 
-pub fn chi_squared(observed: &[f64], expected: &[f64]) -> f64 {
-    assert!(
-        observed.len() == expected.len(),
-        "Observed and expected arrays must have the same length"
-    );
-
+pub fn chi_squared<const N: usize>(observed: &[f64; N], expected: &[f64; N]) -> f64 {
     observed
         .iter()
         .zip(expected.iter())
@@ -38,7 +33,7 @@ pub fn chi_squared_english(text: &str) -> f64 {
         return f64::INFINITY;
     }
 
-    let observed: Vec<f64> = counts.iter().map(|&c| c / total as f64).collect();
+    let observed: [f64; 26] = counts.map(|c| c / total as f64);
     chi_squared(&observed, &ENGLISH_FREQUENCIES)
 }
 
@@ -48,8 +43,8 @@ mod tests {
 
     #[test]
     fn test_chi_squared() {
-        let observed = vec![4.0, 6.0, 8.0];
-        let expected = vec![5.0, 5.0, 8.0];
+        let observed = [4.0, 6.0, 8.0];
+        let expected = [5.0, 5.0, 8.0];
         let result = chi_squared(&observed, &expected);
         assert!((result - 0.4).abs() < 1e-10);
     }
