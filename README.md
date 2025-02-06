@@ -6,17 +6,17 @@ A Rust library that provides tools for encrypting and decrypting various types o
 ## Caesar Cipher
 
 ```rust
-use cipher_solver::Solver;
+use cipher_solver::caesar;
 
 // Encrypt a message
 let message = "The quick brown fox jumps over the lazy dog";
-let encrypted = Solver::encrypt_caesar(message, 3);
+let encrypted = caesar::encrypt(message, 3);
 
 // Decrypt a message with known shift
-let decrypted = Solver::decrypt_caesar(&encrypted, 3);
+let decrypted = caesar::decrypt(&encrypted, 3);
 
 // Automatically solve a Caesar cipher with statistical analysis
-let solved = Solver::solve_caesar(&encrypted);
+let solved = caesar::solve(&encrypted);
 ```
 
 ### How it works
