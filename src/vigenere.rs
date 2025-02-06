@@ -68,11 +68,11 @@ mod tests {
         let keyword = "secret";
         let encrypted = encrypt(original, keyword);
         let decrypted = decrypt(&encrypted, keyword);
-        assert_eq!(decrypted, coerced.as_ref());
+        assert_eq!(decrypted, coerced.to_string());
 
         let encrypted_empty = encrypt(original, "");
-        assert_eq!(encrypted_empty, coerced.as_ref());
+        assert_eq!(encrypted_empty, coerced.to_string());
         let decrypted_empty = decrypt(&encrypted_empty, "");
-        assert_eq!(decrypted_empty, coerced.as_ref());
+        assert_eq!(decrypted_empty, coerced.to_string());
     }
 }

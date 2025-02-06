@@ -21,7 +21,7 @@ pub fn solve(text: &str) -> String {
             (utils::chi_squared_english_score(&shifted), shifted)
         })
         .min_by(|(score1, _), (score2, _)| score1.total_cmp(score2))
-        .map(|(_, text)| text.as_ref().to_string())
+        .map(|(_, text)| text.to_string())
         .unwrap()
 }
 
@@ -74,7 +74,7 @@ mod tests {
             let coerced = LowercaseString::coerce(test);
             let shifted = encrypt(test, 3);
             let solved = solve(&shifted);
-            assert_eq!(solved, coerced.as_ref());
+            assert_eq!(solved, coerced.to_string());
         }
     }
 
@@ -85,6 +85,6 @@ mod tests {
         let shift = 7;
         let encrypted = encrypt(original, shift);
         let decrypted = decrypt(&encrypted, shift);
-        assert_eq!(decrypted, coerced.as_ref());
+        assert_eq!(decrypted, coerced.to_string());
     }
 }
