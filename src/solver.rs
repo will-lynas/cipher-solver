@@ -64,7 +64,6 @@ impl Solver {
     pub fn encrypt_caesar(text: &str, shift: i32) -> String {
         LowercaseString::coerce(text)
             .caesar_shift(shift)
-            .as_ref()
             .to_string()
     }
 
@@ -92,7 +91,7 @@ impl Solver {
         let key_len = key_indices.len();
 
         if key_len == 0 {
-            return text.as_ref().to_string();
+            return text.to_string();
         }
 
         LowercaseString::from_indices(
@@ -106,7 +105,6 @@ impl Solver {
                 })
                 .collect(),
         )
-        .as_ref()
         .to_string()
     }
 
