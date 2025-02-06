@@ -26,3 +26,16 @@ The solver uses statistical analysis to break Caesar ciphers without knowing the
 1. Calculates letter frequencies in the encrypted text
 2. Compares these frequencies with standard English letter frequencies using a chi-squared test
 3. Tries all possible shifts (0-25) and selects the one that produces the most English-like text
+
+## Vigenère Cipher
+
+```rust
+use cipher_solver::vigenere;
+
+// Encrypt a message
+let message = "The quick brown fox jumps over the lazy dog";
+let encrypted = vigenere::encrypt(message, "key").unwrap();
+
+// Decrypt a message with known key
+let decrypted = vigenere::decrypt(&encrypted, "key").unwrap();
+```
