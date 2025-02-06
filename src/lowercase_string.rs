@@ -1,3 +1,5 @@
+use std::fmt::{self, Display, Formatter};
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct LowercaseString(String);
 
@@ -69,6 +71,12 @@ impl AsRef<str> for LowercaseString {
     }
 }
 
+impl Display for LowercaseString {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -136,5 +144,12 @@ mod tests {
         assert_eq!(text.caesar_shift(-1).as_ref(), "gdkkn");
         assert_eq!(text.caesar_shift(27).as_ref(), "ifmmp");
         assert_eq!(LowercaseString::coerce("").caesar_shift(1).as_ref(), "");
+    }
+
+    #[test]
+    fn test_to_string() {
+        let text = LowercaseString::coerce("Hello123");
+        assert_eq!(text.to_string(), "hello");
+        assert_eq!(LowercaseString::coerce("").to_string(), "");
     }
 }
