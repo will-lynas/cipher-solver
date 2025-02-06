@@ -18,7 +18,7 @@ pub fn solve(text: &str) -> String {
     (0..26)
         .map(|shift| {
             let shifted = text.caesar_shift(shift);
-            (utils::english_score(&shifted), shifted)
+            (utils::chi_squared_english_score(&shifted), shifted)
         })
         .min_by(|(score1, _), (score2, _)| score1.total_cmp(score2))
         .map(|(_, text)| text.as_ref().to_string())

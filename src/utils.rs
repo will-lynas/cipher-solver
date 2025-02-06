@@ -17,7 +17,7 @@ pub fn chi_squared<const N: usize>(observed: &[f64; N], expected: &[f64; N]) -> 
         .sum()
 }
 
-pub fn english_score(text: &LowercaseString) -> f64 {
+pub fn chi_squared_english_score(text: &LowercaseString) -> f64 {
     let observed = text.letter_frequencies();
     chi_squared(&observed, &ENGLISH_FREQUENCIES)
 }
@@ -39,8 +39,8 @@ mod tests {
         let english_text = LowercaseString::coerce("the quick brown fox jumps over the lazy dog");
         let gibberish = LowercaseString::coerce("zzzzxxxx");
 
-        let english_result = english_score(&english_text);
-        let gibberish_result = english_score(&gibberish);
+        let english_result = chi_squared_english_score(&english_text);
+        let gibberish_result = chi_squared_english_score(&gibberish);
         assert!(english_result < gibberish_result);
     }
 }
