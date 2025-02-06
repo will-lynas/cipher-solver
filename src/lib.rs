@@ -4,6 +4,7 @@
 mod lowercase_string;
 mod solver;
 mod utils;
+pub mod vigenere;
 
 pub use lowercase_string::LowercaseString;
 pub use solver::Solver;
