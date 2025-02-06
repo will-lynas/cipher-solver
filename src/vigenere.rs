@@ -1,8 +1,8 @@
 use crate::lowercase_string::LowercaseString;
 
 fn apply(text: &str, keyword: &str, decrypt: bool) -> String {
-    let text = LowercaseString::coerce(text);
-    let keyword = LowercaseString::coerce(keyword);
+    let text = LowercaseString::normalize(text);
+    let keyword = LowercaseString::normalize(keyword);
     let text_indices = text.to_indices();
     let key_indices = keyword.to_indices();
     let key_len = key_indices.len();
@@ -64,15 +64,15 @@ mod tests {
     #[test]
     fn test() {
         let original = "The quick brown fox jumps over the lazy dog";
-        let coerced = LowercaseString::coerce(original);
+        let normalized = LowercaseString::normalize(original);
         let keyword = "secret";
         let encrypted = encrypt(original, keyword);
         let decrypted = decrypt(&encrypted, keyword);
-        assert_eq!(decrypted, coerced.to_string());
+        assert_eq!(decrypted, normalized.to_string());
 
         let encrypted_empty = encrypt(original, "");
-        assert_eq!(encrypted_empty, coerced.to_string());
+        assert_eq!(encrypted_empty, normalized.to_string());
         let decrypted_empty = decrypt(&encrypted_empty, "");
-        assert_eq!(decrypted_empty, coerced.to_string());
+        assert_eq!(decrypted_empty, normalized.to_string());
     }
 }

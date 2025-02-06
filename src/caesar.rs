@@ -14,7 +14,7 @@ use crate::utils;
 /// ```
 #[must_use]
 pub fn solve(text: &str) -> String {
-    let text = LowercaseString::coerce(text);
+    let text = LowercaseString::normalize(text);
     (0..26)
         .map(|shift| {
             let shifted = text.caesar_shift(shift);
@@ -38,7 +38,7 @@ pub fn solve(text: &str) -> String {
 /// ```
 #[must_use]
 pub fn encrypt(text: &str, shift: i32) -> String {
-    LowercaseString::coerce(text)
+    LowercaseString::normalize(text)
         .caesar_shift(shift)
         .to_string()
 }
@@ -71,20 +71,20 @@ mod tests {
             "Stand in the desert. Near them, on the sand,",
         ];
         for test in tests {
-            let coerced = LowercaseString::coerce(test);
+            let normalized = LowercaseString::normalize(test);
             let shifted = encrypt(test, 3);
             let solved = solve(&shifted);
-            assert_eq!(solved, coerced.to_string());
+            assert_eq!(solved, normalized.to_string());
         }
     }
 
     #[test]
     fn test_encrypt_decrypt() {
         let original = "The quick brown fox jumps over the lazy dog";
-        let coerced = LowercaseString::coerce(original);
+        let normalized = LowercaseString::normalize(original);
         let shift = 7;
         let encrypted = encrypt(original, shift);
         let decrypted = decrypt(&encrypted, shift);
-        assert_eq!(decrypted, coerced.to_string());
+        assert_eq!(decrypted, normalized.to_string());
     }
 }

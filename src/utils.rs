@@ -36,8 +36,8 @@ mod tests {
 
     #[test]
     fn test_english_score_sanity() {
-        let english_text = LowercaseString::coerce("the quick brown fox jumps over the lazy dog");
-        let gibberish = LowercaseString::coerce("zzzzxxxx");
+        let english_text = LowercaseString::normalize("the quick brown fox jumps over the lazy dog");
+        let gibberish = LowercaseString::normalize("zzzzxxxx");
 
         let english_result = chi_squared_english_score(&english_text);
         let gibberish_result = chi_squared_english_score(&gibberish);
