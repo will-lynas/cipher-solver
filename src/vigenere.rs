@@ -1,6 +1,6 @@
 use crate::lowercase_string::LowercaseString;
 
-fn apply(text: &str, keyword: &str, decrypt: bool) -> String {
+fn apply(text: &str, keyword: &str, decrypt: bool) -> Option<String> {
     let text = LowercaseString::normalize(text);
     let keyword = LowercaseString::normalize(keyword);
     let text_indices = text.to_indices();
@@ -8,21 +8,23 @@ fn apply(text: &str, keyword: &str, decrypt: bool) -> String {
     let key_len = key_indices.len();
 
     if key_len == 0 {
-        return text.to_string();
+        return None;
     }
 
-    LowercaseString::from_indices(
-        text_indices
-            .iter()
-            .enumerate()
-            .map(|(i, &c)| {
-                let k = key_indices[i % key_len];
-                let shift = if decrypt { 26 - k } else { k };
-                (c + shift) % 26
-            })
-            .collect(),
+    Some(
+        LowercaseString::from_indices(
+            text_indices
+                .iter()
+                .enumerate()
+                .map(|(i, &c)| {
+                    let k = key_indices[i % key_len];
+                    let shift = if decrypt { 26 - k } else { k };
+                    (c + shift) % 26
+                })
+                .collect(),
+        )
+        .to_string(),
     )
-    .to_string()
 }
 
 /// Encrypts a message using a Vigenère cipher with a given keyword.
@@ -33,11 +35,11 @@ fn apply(text: &str, keyword: &str, decrypt: bool) -> String {
 /// use cipher_solver::vigenere;
 ///
 /// let text = "hello world";
-/// let encrypted = vigenere::encrypt(text, "key");
+/// let encrypted = vigenere::encrypt(text, "key").unwrap();
 /// assert_eq!(encrypted, "rijvsuyvjn");
 /// ```
 #[must_use]
-pub fn encrypt(text: &str, keyword: &str) -> String {
+pub fn encrypt(text: &str, keyword: &str) -> Option<String> {
     apply(text, keyword, false)
 }
 
@@ -49,11 +51,11 @@ pub fn encrypt(text: &str, keyword: &str) -> String {
 /// use cipher_solver::vigenere;
 ///
 /// let text = "rijvsuyvjn";
-/// let decrypted = vigenere::decrypt(text, "key");
+/// let decrypted = vigenere::decrypt(text, "key").unwrap();
 /// assert_eq!(decrypted, "helloworld");
 /// ```
 #[must_use]
-pub fn decrypt(text: &str, keyword: &str) -> String {
+pub fn decrypt(text: &str, keyword: &str) -> Option<String> {
     apply(text, keyword, true)
 }
 
@@ -66,13 +68,14 @@ mod tests {
         let original = "The quick brown fox jumps over the lazy dog";
         let normalized = LowercaseString::normalize(original);
         let keyword = "secret";
-        let encrypted = encrypt(original, keyword);
+        let encrypted = encrypt(original, keyword).unwrap();
         let decrypted = decrypt(&encrypted, keyword);
-        assert_eq!(decrypted, normalized.to_string());
+        assert_eq!(decrypted, Some(normalized.to_string()));
 
         let encrypted_empty = encrypt(original, "");
-        assert_eq!(encrypted_empty, normalized.to_string());
-        let decrypted_empty = decrypt(&encrypted_empty, "");
-        assert_eq!(decrypted_empty, normalized.to_string());
+        assert_eq!(encrypted_empty, None);
+
+        let decrypted_empty = decrypt(original, "");
+        assert_eq!(decrypted_empty, None);
     }
 }
